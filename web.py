@@ -9,8 +9,8 @@ class MainHandler(tornado.web.RequestHandler):
         self.write("Hello, world!")
 
 class SearchHandler(tornado.web.RequestHandler):
-    def initialize(self, es): 
-        self.es = es
+    def initialize(self): 
+        self.es = Elasticsearch([{'host':'127.0.0.1', 'port':9200}])
 
     def get(self):
         q = self.get_query_argument('q', '')
@@ -22,8 +22,8 @@ class SearchHandler(tornado.web.RequestHandler):
         self.write(response)
 
 class AddHandler(tornado.web.RequestHandler):
-    def initialize(self, es): 
-        self.es = es
+    def initialize(self): 
+        self.es = Elasticsearch([{'host':'127.0.0.1', 'port':9200}])
 
     def post(self):
         data = json.loads(self.request.body)
@@ -31,11 +31,10 @@ class AddHandler(tornado.web.RequestHandler):
         self.write(response)
 
 def make_app():
-    es = Elasticsearch([{'host':'127.0.0.1','port':9200}])
     return tornado.web.Application([
         (r"/", MainHandler),
-        (r"/search", SearchHandler, dict(es=es)),
-        (r"/add", AddHandler, dict(es=es)),
+        (r"/search", SearchHandler),
+        (r"/add", AddHandler),
     ])
 
 if __name__ == "__main__":
